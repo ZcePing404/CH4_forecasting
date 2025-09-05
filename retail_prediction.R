@@ -1,4 +1,4 @@
-setwd("C:/Users/enton/Project/R/Retail_Prediction")
+setwd("C:/Users/enton/Project/R/supplement_sales_forecasting")
 
 # Load packages
 #install.packages("readr")
@@ -20,6 +20,7 @@ df_weekly <- df %>%
   mutate(Week = floor_date(Date, unit = "week")) %>%
   group_by(Week) %>%
   summarise(TotalRevenue = sum(Revenue), .groups = "drop")
+
 # Plot time series
 #ggplot(df_weekly, aes(x = Week, y = TotalRevenue)) +
 #  geom_line(color = "steelblue", size = 1) +
@@ -30,31 +31,15 @@ df_weekly <- df %>%
 #  theme_minimal()
 
 Data <- df_weekly$TotalRevenue
-Data
-adf.test(Data)
+
 train_size <- floor(0.80 * length(Data))
 train <- head(Data, train_size)
+adf.test(train)
 kpss.test(train)
 test  <- tail(Data, length(Data) - train_size)
-
 ts_train <- ts(train, frequency = 52, 
                start = c(year(min(df_weekly$Week)), week(min(df_weekly$Week))))
 ts_train
-
-
 ts_test <- test
 ts_test
 
-
-# Fit ARIMA automatically
-fit <- auto.arima(ts_train)
-
-# Model summary
-summary(fit)
-checkresiduals(fit)
-
-# Forecast next 30 days
-forecast_data <- forecast(fit, h = 30)
-
-# Plot forecast
-autoplot(forecast_data)
