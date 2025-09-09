@@ -1,33 +1,39 @@
 eda_time_series <- function(df) {
   
-  # 1. Convert to ts object (weekly frequency)
-  ts_data <- ts(df$TotalRevenue, frequency = 52,
-                start = c(year(min(df$Date)), as.numeric(format(min(df$Date), "%U"))))
+  # 1. Convert to ts object
+  ts_data <- ts(df$average, start = c(2002, 5), frequency = 12)
   
+  # -------------------------------
   # Decomposition (trend + seasonality + remainder)
+  # -------------------------------
   cat("\n--- STL Decomposition ---\n")
   ts_decomp <- stl(ts_data, s.window = "periodic")
-  plot(ts_decomp, main = "Decomposition of Revenue")
+  plot(ts_decomp, main = "Decomposition of Monthly Concentration")
   
-  # -------------------------------
-  # Trend Analysis
-  # -------------------------------
-  cat("\n--- Trend Analysis ---\n")
-  p1 <- ggplot(df, aes(x = Date, y = TotalRevenue)) +
-    geom_line(color = "steelblue") +
-    labs(title = "Trend in Total Revenue", x = "Date", y = "Revenue") +
-    theme_minimal()
-  print(p1)
   
   # -------------------------------
   # Seasonality
   # -------------------------------
   cat("\n--- Seasonality ---\n")
-  print(ggseasonplot(ts_data, year.labels = TRUE, col = rainbow(10), main = "Seasonal Plot"))
+  print(ggseasonplot(ts_data, year.labels = TRUE, col = rainbow(10),
+                     main = "Seasonal Plot of Monthly Concentration"))
+  
   
   # -------------------------------
   # Stationarity Tests
   # -------------------------------
+  cat("\n--- Original Data Analysis ---\n")
+  p1 <- ggplot(df, aes(x = date, y = average)) +
+    geom_line(color = "darkgreen") +
+    labs(title = "Trend in Monthly Concentration", x = "date", y = "Avg Concentration") +
+    theme_minimal()
+  
+  # Autocorrelation Analysis
+  layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
+  plot(ts_data, ylab="Concentration", main="Monthly nitrous oxide concentration")
+  acf(ts_data, main="ACF of original data")
+  pacf(ts_data, main="PACF of original data")
+  
   cat("\n--- Stationarity Tests ---\n")
   
   # ADF Test
@@ -38,14 +44,51 @@ eda_time_series <- function(df) {
   kpss <- kpss.test(ts_data)
   print(kpss)
   
-  # -------------------------------
-  # Autocorrelation
-  # -------------------------------
-  cat("\n--- Autocorrelation Analysis ---\n")
+
   
-  Acf(ts_data, main = "ACF of Revenue")
-  Pacf(ts_data, main = "PACF of Revenue")
+  # --------------------------------------------------------------
+  # First Differencing
+  # --------------------------------------------------------------
+  cat("\n--- First Differencing ---\n")
+  diff_ts_data <- ts(diff(ts_data, lag=12))
+  layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
+  ts.plot(diff_ts_data,gpars=list(main= "First Differences", xlab="Month",
+                                  ylab="Concentration", lty=1))
   
-  # Return decomposition object in case you want to use it later
-  return(list(decomposition = ts_decomp, adf = adf, kpss = kpss))
+  # Autocorrelation Analysis
+  acf(diff_ts_data, main="ACF of first differencing", lag.max=40)
+  pacf(diff_ts_data, main="PACF of first differencing", lag.max=40)
+  
+  # ADF Test
+  adf <- adf.test(diff_ts_data)
+  print(adf)
+  
+  # KPSS Test
+  kpss <- kpss.test(diff_ts_data)
+  print(kpss)
+  
+  # --------------------------------------------------------------
+  # Second Differencing
+  # --------------------------------------------------------------
+  cat("\n--- Second Differencing ---\n")
+  diff_ts_data2 <- ts(diff(diff_ts_data, lag = 1))
+  layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
+  ts.plot(diff_ts_data2,gpars=list(main= "Second Differences", xlab="Month",
+                                  ylab="Concentration", lty=1))
+  
+  # Autocorrelation Analysis
+  acf(diff_ts_data2, main="ACF of Second differencing", lag.max=40)
+  pacf(diff_ts_data2, main="PACF of Second differencing", lag.max=40)
+  
+  # ADF Test
+  adf <- adf.test(diff_ts_data2)
+  print(adf)
+  
+  # KPSS Test
+  kpss <- kpss.test(diff_ts_data2)
+  print(kpss)
+  
+  
+  # Return decomposition + tests
+  return(list(df = diff_ts_data, decomposition = ts_decomp, adf = adf, kpss = kpss))
 }
