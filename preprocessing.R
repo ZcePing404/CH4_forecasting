@@ -4,10 +4,10 @@ preprocess_data <- function(df) {
   # 1. Remove missing values (for Production)
   missing_count <- sum(is.na(df$average))
   if (missing_count > 0) {
-    cat("Missing values detected in Production:", missing_count, "→ removing rows.\n")
+    cat("Missing values detected in dataset:", missing_count, "→ removing rows.\n")
     df <- df %>% filter(!is.na(average))
   } else {
-    cat("No missing values detected in Production.\n")
+    cat("No missing values detected in dataset\n")
   }
   
   # 2. Remove duplicate rows
@@ -27,10 +27,10 @@ preprocess_data <- function(df) {
                          df$average > (Q3 + 1.5 * IQR))
   
   if (length(outlier_idx) > 0) {
-    cat("Outliers detected in Production:", length(outlier_idx), "→ removing outliers.\n")
+    cat("Outliers detected in dataset:", length(outlier_idx), "→ removing outliers.\n")
     df <- df[-outlier_idx, ]
   } else {
-    cat("No outliers detected in Production.\n")
+    cat("No outliers detected in dataset\n")
   }
   
   cat("\nAfter preprocessing:", nrow(df), "rows ×", ncol(df), "columns\n")

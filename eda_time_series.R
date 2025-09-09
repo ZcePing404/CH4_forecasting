@@ -4,7 +4,9 @@ eda_time_series <- function(df) {
   ts_data <- ts(df$average, start = c(2002, 5), frequency = 12)
   
   # -------------------------------
+  # -------------------------------
   # Decomposition (trend + seasonality + remainder)
+  # -------------------------------
   # -------------------------------
   cat("\n--- STL Decomposition ---\n")
   ts_decomp <- stl(ts_data, s.window = "periodic")
