@@ -1,4 +1,5 @@
-setwd("E:/Statistic/supplement_sales_forecasting")
+setwd("E:/Statistic/supplement_sales_forecasting") #Lim Wei He working directory
+setwd("C:/Users/isaac/OneDrive/Documents/GitHub/supplement_sales_forecasting") #Isaac working directory
 
 library(readr)     # to read csv
 library(dplyr)     # for data manipulation
@@ -82,3 +83,4 @@ layout(matrix(c(1,1)))
 plot(fr)
 lines(ts_test, col="turquoise2")
 accuracy(fr, ts_test)
+
