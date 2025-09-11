@@ -1,4 +1,11 @@
 differencing_method <- function(df) {
+  # Determine how many non-seasonal differences are needed (to remove trend)
+  d <- ndiffs(ts_data)  
+  
+  # Determine how many seasonal differences are needed (to remove seasonality)
+  D <- nsdiffs(ts_data)  
+  cat("Non-seasonal differences needed (d):", d, "\n")
+  cat("Seasonal differences needed (D):", D, "\n")
   
   # --------------------------------------------------------------
   # First Differencing (seasonal)
