@@ -19,22 +19,16 @@ preprocess_data <- function(df) {
     cat("No duplicate rows detected.\n")
   }
   
-  # Formating the date  
+  
+  # Create a date column for the monthly data
+  df$date <- as.Date(paste(df$year, df$month, "01", sep = "-"))
+  
   df <- df %>%
-    mutate(
-      date_char = as.character(date),
-      previous_date = lag(date_char),
-      month_num = ifelse(
-        grepl("\\.1$", date_char) & grepl("\\.9$", previous_date),
-        10,
-        as.numeric(sub(".*\\.", "", date_char))
-      ),
-      date = ymd(paste(floor(as.numeric(date)), month_num, "01", sep = "-"))
-    ) %>%
     select(date, average)
   
   df <- df %>%
-    filter(year(date) >= 2010)
+    filter(date >= as.Date("2010-01-01"))
+  
 
   min_date <- min(df$date)  
   min_year <- as.numeric(format(min_date, "%Y"))
