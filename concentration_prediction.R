@@ -1,7 +1,8 @@
 setwd("E:/Statistic/supplement_sales_forecasting") #Lim Wei He working directory
 setwd("C:/Users/isaac/OneDrive/Documents/GitHub/supplement_sales_forecasting") #Isaac working directory
+setwd("C:/Users/enton/Project/R/forecasting_nitron_concentration") # Zce Ping working directory
 
-library(readr)     # to read csv
+library(readr)     
 library(dplyr)     # for data manipulation
 library(lubridate) # to handle dates
 library(forecast)  # ARIMA forecasting
@@ -11,6 +12,7 @@ library(urca)
 library(zoo)
 source("preprocessing.R")
 source("eda_time_series.R")
+source("lstm.R")
 
 # Read dataset
 df <- read_csv("nitrous_oxide_concentration.csv")
@@ -35,15 +37,14 @@ ggplot(df_clean, aes(x = date, y = average)) +
 
 eda_results <- eda_time_series(df_clean)
 Data <- df_clean$average
-
 train_size <- floor(0.80 * length(Data))
 train <- head(Data, train_size)
 train
+
 test  <- tail(Data, length(Data) - train_size)
 ts_train <- ts(train,
                frequency = 12,
                start = c(2002, 5))
-
 ts_train
 # Get the last date of the training set
 last_train_date <- max(df_clean$date[1:length(train)])

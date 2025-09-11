@@ -20,16 +20,6 @@ eda_time_series <- function(df) {
   print(ggseasonplot(ts_data, year.labels = TRUE, col = rainbow(10),
                      main = "Seasonal Plot of Monthly Concentration"))
   
-  
-  # -------------------------------
-  # Stationarity Tests
-  # -------------------------------
-  cat("\n--- Original Data Analysis ---\n")
-  p1 <- ggplot(df, aes(x = date, y = average)) +
-    geom_line(color = "darkgreen") +
-    labs(title = "Trend in Monthly Concentration", x = "date", y = "Avg Concentration") +
-    theme_minimal()
-  
   # Autocorrelation Analysis
   layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
   plot(ts_data, ylab="Concentration", main="Monthly nitrous oxide concentration")
@@ -46,7 +36,16 @@ eda_time_series <- function(df) {
   kpss <- kpss.test(ts_data)
   print(kpss)
   
-
+  
+  # Determine how many non-seasonal differences are needed (to remove trend)
+  d <- ndiffs(ts_data)  
+  
+  # Determine how many seasonal differences are needed (to remove seasonality)
+  D <- nsdiffs(ts_data)  
+  
+  # Print results
+  cat("Non-seasonal differences needed (d):", d, "\n")
+  cat("Seasonal differences needed (D):", D, "\n")
   
   # --------------------------------------------------------------
   # First Differencing
@@ -90,7 +89,6 @@ eda_time_series <- function(df) {
   kpss <- kpss.test(diff_ts_data2)
   print(kpss)
   
-  
   # Return decomposition + tests
-  return(list(df = diff_ts_data, decomposition = ts_decomp, adf = adf, kpss = kpss))
+  return(list(df = diff_ts_data2, decomposition = ts_decomp, adf = adf, kpss = kpss))
 }
