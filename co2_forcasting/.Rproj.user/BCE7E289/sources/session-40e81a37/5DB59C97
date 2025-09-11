@@ -1,26 +1,26 @@
 {
     "id": "5DB59C97",
-    "path": "E:/Statistic/co2_forcasting/ARIMA.R",
+    "path": "E:/Statistic/supplement_sales_forecasting/co2_forcasting/ARIMA.R",
     "project_path": "ARIMA.R",
     "type": "r_source",
     "hash": "0",
     "contents": "",
-    "dirty": true,
+    "dirty": false,
     "created": 1757568470606.0,
     "source_on_save": false,
     "relative_order": 4,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "28,35",
+        "cursorPosition": "25,22",
         "scrollLine": "7"
     },
     "folds": "",
-    "lastKnownWriteTime": 1757577913,
+    "lastKnownWriteTime": 1757580943,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1757579187093,
+    "last_content_update": 1757580943291,
     "read_only": false,
     "read_only_alternatives": []
 }

@@ -27,7 +27,7 @@ preprocess_data <- function(df) {
     select(date, average)
   
   df <- df %>%
-    filter(date >= as.Date("2008-01-01"))
+    filter(date >= as.Date("2010-01-01"))
   
 
   min_date <- min(df$date)  
