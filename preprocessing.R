@@ -1,7 +1,7 @@
 preprocess_data <- function(df) {
   cat("\nBefore preprocessing:", nrow(df), "rows ×", ncol(df), "columns\n")
   
-  # 1. Remove missing values (for Production)
+  # Remove missing values (for Production)
   missing_count <- sum(is.na(df$average))
   if (missing_count > 0) {
     cat("Missing values detected in dataset:", missing_count, "→ removing rows.\n")
@@ -10,7 +10,7 @@ preprocess_data <- function(df) {
     cat("No missing values detected in dataset\n")
   }
   
-  # 2. Remove duplicate rows
+  # Remove duplicate rows
   dup_count <- sum(duplicated(df))
   if (dup_count > 0) {
     cat("Duplicate rows detected:", dup_count, "→ removing duplicates.\n")
@@ -19,7 +19,40 @@ preprocess_data <- function(df) {
     cat("No duplicate rows detected.\n")
   }
   
-  # 3. Detect and remove outliers (IQR method for Production)
+  # Formating the date
+  # df <- df %>%
+  #   mutate(date = ymd(paste0(gsub("\\.", "-", as.character(date)), "-01"))) %>%
+  #   select(date, average)
+  
+  df <- df %>%
+    mutate(
+      date_char = as.character(date),
+      previous_date = lag(date_char),
+      month_num = ifelse(
+        grepl("\\.1$", date_char) & grepl("\\.9$", previous_date),
+        10,
+        as.numeric(sub(".*\\.", "", date_char))
+      ),
+      date = ymd(paste(floor(as.numeric(date)), month_num, "01", sep = "-"))
+    ) %>%
+    select(date, average)
+  
+  df <- df %>%
+    filter(year(date) >= 2010)
+
+  min_date <- min(df$date)  
+  min_year <- as.numeric(format(min_date, "%Y"))
+  min_month <- as.numeric(format(min_date, "%m"))
+  ts_data <- ts(df$average, start=c(min_year, min_month), frequency=12)
+  
+  # Now you can use cycle()
+  boxplot(ts_data ~ cycle(ts_data),
+          xlab = "Month",
+          ylab = "Avg Concentration",
+          main = "Boxplot of Monthly Nitrous Oxide Concentration")
+  
+  
+  # Detect and remove outliers (IQR method for Production)
   Q1 <- quantile(df$average, 0.25, na.rm = TRUE)
   Q3 <- quantile(df$average, 0.75, na.rm = TRUE)
   IQR <- Q3 - Q1
@@ -35,10 +68,5 @@ preprocess_data <- function(df) {
   
   cat("\nAfter preprocessing:", nrow(df), "rows ×", ncol(df), "columns\n")
   
-  # 4. Formating the date
-  df <- df %>%
-    mutate(date = ymd(paste0(gsub("\\.", "-", as.character(date)), "-01"))) %>%
-    select(date, average)
-  
-  return(df)
+  return(list(df=df, ts_data=ts_data))
 }
