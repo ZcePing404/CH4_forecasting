@@ -26,13 +26,13 @@ print(df_clean)
 # Plot time series
 ggplot(df_clean, aes(x = date, y = average)) +
    geom_line(color = "steelblue") +
-   labs(title = "Monthly Nitrous Oxide Concentration",
+   labs(title = "Monthly Avg CO2 Concentration from Jan 2010 to Dec 2023",
        x = "date", y = "Avg Concentration")
 
 # ggplot(df_clean, aes(x = average)) +
 #   geom_histogram(fill = "skyblue", bins = 30, color = "black") +
-#   labs(title = "Distribution of nitrous oxide concentration",
-#        x = "Avg. Concentration", y = "Count")
+#   labs(title = "Distribution of CO2 concentration",
+#        x = "Avg Concentration", y = "Count")
 
 stationary_test(df_clean)
 differencing_method(df_clean)

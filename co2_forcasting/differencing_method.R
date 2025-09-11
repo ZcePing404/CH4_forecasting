@@ -7,7 +7,7 @@ differencing_method <- function(df) {
   diff_ts_data <- ts(diff(ts_data, lag=12))
   layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
   ts.plot(diff_ts_data,gpars=list(main= "First Differences (seasonal)", xlab="Month",
-                                  ylab="Concentration", lty=1))
+                                  ylab="Avg Concentration", lty=1))
   
   # Autocorrelation Analysis
   acf(diff_ts_data, main="ACF of first differencing", lag.max=25)
@@ -28,7 +28,7 @@ differencing_method <- function(df) {
   diff_ts_data2 <- ts(diff(diff_ts_data, lag = 1))
   layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
   ts.plot(diff_ts_data2,gpars=list(main= "Second Differences (non-seasonal)", xlab="Month",
-                                  ylab="Concentration", lty=1))
+                                  ylab="Avg Concentration", lty=1))
   
   # Autocorrelation Analysis
   acf(diff_ts_data2, main="ACF of Second differencing", lag.max=25)
