@@ -19,11 +19,7 @@ preprocess_data <- function(df) {
     cat("No duplicate rows detected.\n")
   }
   
-  # Formating the date
-  # df <- df %>%
-  #   mutate(date = ymd(paste0(gsub("\\.", "-", as.character(date)), "-01"))) %>%
-  #   select(date, average)
-  
+  # Formating the date  
   df <- df %>%
     mutate(
       date_char = as.character(date),

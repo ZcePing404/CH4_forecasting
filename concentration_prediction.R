@@ -1,4 +1,5 @@
-setwd("E:/Statistic/supplement_sales_forecasting")
+# setwd("E:/Statistic/supplement_sales_forecasting") #Lim Wei He working directory
+# setwd("C:/Users/isaac/OneDrive/Documents/GitHub/supplement_sales_forecasting") #Isaac working directory
 
 library(readr)     # to read csv
 library(dplyr)     # for data manipulation
@@ -62,5 +63,4 @@ ts_test <- ts(test,
 
 checkresiduals(ts_train)
 
-
-ARIMA_method(ts_train, ts_test)
+ARIMA(ts_train, ts_test)
