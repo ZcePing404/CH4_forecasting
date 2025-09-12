@@ -1,16 +1,6 @@
 stationary_test <- function(df) {
   
   # -------------------------------
-  # -------------------------------
-  # Decomposition
-  # -------------------------------
-  # -------------------------------
-  cat("\n--- STL Decomposition ---\n")
-  ts_decomp <- stl(ts_data, s.window = "periodic")
-  plot(ts_decomp, main = "Decomposition of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
-  
-  
-  # -------------------------------
   # Seasonality
   # -------------------------------
   cat("\n--- Seasonality ---\n")

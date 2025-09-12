@@ -35,34 +35,74 @@ preprocess_data <- function(df) {
   min_month <- as.numeric(format(min_date, "%m"))
   ts_data <- ts(df$average, start=c(min_year, min_month), frequency=12)
   
+  
+  # -------------------------------
+  # Decomposition
+  # -------------------------------
+  cat("\n--- STL Decomposition ---\n")
+  ts_decomp <- stl(ts_data, s.window = "periodic", robust = T)
+  plot(ts_decomp, main = "Decomposition of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
+  
+  remainder_data <- ts_decomp$time.series[, "remainder"]
+  plot(remainder_data,
+       xlab = "Month",
+       ylab = "remainder",
+       main = "Remainder of the Monthly CO2 Concentration from Jan 2010 to Dec 2023")
+  
   # Box plot
-  boxplot(ts_data ~ cycle(ts_data),
-          xlab = "Month",
-          ylab = "Avg Concentration",
-          main = "Boxplot of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
+  boxplot(remainder_data,
+          ylab = "Remainder",
+          main = "Boxplot of Remainder of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
 
   
   # Calculate the IQR, Q1, and Q3
-  Q1 <- quantile(df$average, 0.25, na.rm = TRUE)
-  Q3 <- quantile(df$average, 0.75, na.rm = TRUE)
+  Q1 <- quantile(remainder_data, 0.25, na.rm = TRUE)
+  Q3 <- quantile(remainder_data, 0.75, na.rm = TRUE)
   IQR <- Q3 - Q1
   
   # Calculate the outlier thresholds
   lower_bound <- Q1 - 1.5 * IQR
   upper_bound <- Q3 + 1.5 * IQR
   
-  outlier_idx <- which(df$average < (lower_bound) | 
-                         df$average > (upper_bound))
+  outlier_idx <- which(remainder_data < (lower_bound) | 
+                         remainder_data > (upper_bound))
+  
+  ts_data_corrected <- ts_data
   
   if (length(outlier_idx) > 0) {
-    cat("Outliers detected in dataset:", length(outlier_idx), "→ removing outliers.\n")
-    df <- df[-outlier_idx, ]
+    cat("Outliers detected in dataset:", length(outlier_idx), "→ handling outliers.\n")
+    ts_ideal_data <- ts_decomp$time.series[, "trend"] + ts_decomp$time.series[, "seasonal"]
+    # Use a loop to replace each outlier with the corrected value from the clean series
+    for (i in outlier_idx) {
+      ts_data_corrected[i] <- ts_ideal_data[i]
+    }
   } else {
     cat("No outliers detected in dataset\n")
   }
-
+  
+  plot(ts_data, 
+       xlab = "Month",
+       ylab = "Avg Concentration",
+       main = "Original Data with Corrected Outliers")
+  lines(ts_data_corrected, col = "red")
+  # Add a legend to the plot
+  legend("topleft", 
+         legend = c("Original Data", "Corrected Data"), 
+         col = c("black", "red"), 
+         lty = 1,
+         bty = "n")
   
   cat("\nAfter preprocessing:", nrow(df), "rows ×", ncol(df), "columns\n")
   
-  return(list(df=df, ts_data=ts_data))
+  ts_decomp <- stl(ts_data_corrected, s.window = "periodic")
+  plot(ts_decomp, main = "Decomposition of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
+  
+  # --- Convert the corrected ts object back to a data frame ---
+  df_corrected <- as.data.frame(ts_data_corrected)
+  df_corrected$average <- df_corrected$x
+  df_corrected$date <- as.Date(as.yearmon(time(ts_data_corrected)))
+  df_corrected <- df_corrected %>%
+    select(date, average)
+  
+  return(list(df=df_corrected, ts_data=ts_data_corrected))
 }
