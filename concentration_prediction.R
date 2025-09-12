@@ -12,6 +12,7 @@ source("preprocessing.R")
 source("stationary_test.R")
 source("differencing_method.R")
 source("ARIMA.R")
+source("HtWinters.R")
 source("Prophet.R")
 
 # Read dataset
@@ -64,5 +65,7 @@ ts_test <- ts(test,
 checkresiduals(ts_train)
 
 ARIMA_method(ts_train, ts_test)
+
+HoltWinters_method(ts_train, ts_test)
 
 Prophet_method()
