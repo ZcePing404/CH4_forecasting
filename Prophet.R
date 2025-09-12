@@ -7,7 +7,9 @@ Prophet_method <- function(){
                yearly.seasonality = TRUE,   # monthly data usually has yearly cycle
                weekly.seasonality = FALSE,  # no need for weekly seasonality in monthly data
                daily.seasonality = FALSE,
+               interval.width = 0.95
   )
+  
   future <- make_future_dataframe(m,
                                   periods = length(test),
                                   freq = "month")
@@ -20,6 +22,7 @@ Prophet_method <- function(){
       x = "Date",
       y = "Average"
     )
+  print(p)
   
   prophet_plot_components(m, forecast)
   
@@ -74,9 +77,9 @@ Prophet_method <- function(){
   # 6. Plot Actual vs Forecast
   plot(comparison$ds, comparison$actual, type = "l", col = "black", lwd = 2,
        ylab = "Value", xlab = "Date", main = "Prophet Forecast vs Actual")
-  lines(comparison$ds, comparison$predicted, col = "blue", lwd = 2)
+  lines(comparison$ds, comparison$predicted, col = "red", lwd = 2)
   legend("topleft", legend = c("Actual", "Forecast"),
-         col = c("black", "blue"), lty = 1, lwd = 2)
+         col = c("black", "red"), lty = 1, lwd = 2)
   
   # 7. Residual analysis
   comparison$residuals <- comparison$actual - comparison$predicted
