@@ -6,10 +6,13 @@ library(ggplot2)   # plotting
 library(tseries)
 library(urca)
 library(zoo)
+library(prophet)
+library(Metrics)
 source("preprocessing.R")
 source("stationary_test.R")
 source("differencing_method.R")
 source("ARIMA.R")
+source("Prophet.R")
 
 # Read dataset
 df <- read_csv("co2_concentration.csv")
@@ -61,3 +64,5 @@ ts_test <- ts(test,
 checkresiduals(ts_train)
 
 ARIMA_method(ts_train, ts_test)
+
+Prophet_method()
