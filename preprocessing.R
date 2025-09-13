@@ -73,6 +73,7 @@ preprocess_data <- function() {
   outlier_idx <- which(remainder_data < (lower_bound) | 
                          remainder_data > (upper_bound))
   
+  df_corrected <- df
   ts_data_corrected <- ts_data
   
   if (length(outlier_idx) > 0) {
@@ -82,21 +83,13 @@ preprocess_data <- function() {
     for (i in outlier_idx) {
       ts_data_corrected[i] <- ts_ideal_data[i]
     }
+    # --- Convert the corrected ts object back to a data frame ---
+    average <- as.numeric(ts_data_corrected)
+    df_corrected <- as.data.frame(average)
+    df_corrected$date <- as.Date(as.yearmon(time(ts_data_corrected)))
   } else {
     cat("No outliers detected in dataset\n")
   }
-  
-  cat("\nAfter preprocessing:", nrow(df), "rows ×", ncol(df), "columns\n")
-  
-  ts_decomp <- stl(ts_data_corrected, s.window = "periodic")
-  plot(ts_decomp, main = "Decomposition of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
-  
-  # --- Convert the corrected ts object back to a data frame ---
-  df_corrected <- as.data.frame(ts_data_corrected)
-  df_corrected$average <- df_corrected$x
-  df_corrected$date <- as.Date(as.yearmon(time(ts_data_corrected)))
-  df_corrected <- df_corrected %>%
-    select(date, average)
   
   return(list(df=df_corrected, ts_data=ts_data_corrected))
 }

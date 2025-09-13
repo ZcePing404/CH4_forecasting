@@ -20,8 +20,8 @@ stationary_test <- function() {
   # Autocorrelation Analysis
   layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
   plot(ts_data, ylab="Avg Concentration", main="Monthly N2O concentration")
-  acf(ts_data, main="ACF of original data")
-  pacf(ts_data, main="PACF of original data")
+  acf(as.numeric(ts_data), lag.max=40, main="ACF of original data")
+  pacf(as.numeric(ts_data), lag.max=40, main="PACF of original data")
   
   cat("\n--- Stationarity Tests ---\n")
   

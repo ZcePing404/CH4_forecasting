@@ -1,8 +1,8 @@
-library(readr)     # to read csv
-library(dplyr)     # for data manipulation
-library(lubridate) # to handle dates
-library(forecast)  # ARIMA forecasting
-library(ggplot2)   # plotting
+library(readr)     
+library(dplyr)     
+library(lubridate) 
+library(forecast)  
+library(ggplot2)   
 library(tseries)
 library(urca)
 library(zoo)
