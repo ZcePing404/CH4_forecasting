@@ -3,20 +3,24 @@ Prophet_method <- function(){
     ds = df_clean$date[1:length(train)],  # training dates
     y  = train                            # training values
   )
-  m <- prophet(train_df, 
-               yearly.seasonality = TRUE,   # monthly data usually has yearly cycle
+  
+  
+  m <- prophet(yearly.seasonality = TRUE,   # monthly data usually has yearly cycle
                weekly.seasonality = FALSE,  # no need for weekly seasonality in monthly data
                daily.seasonality = FALSE,
+               changepoint.range = 0.85,
                interval.width = 0.95
   )
+
+  m_fit <- fit.prophet(m, train_df)
   
-  future <- make_future_dataframe(m,
+  future <- make_future_dataframe(m_fit,
                                   periods = length(test),
                                   freq = "month")
   
-  forecast <- predict(m, future)
+  forecast <- predict(m_fit, future)
   
-  p <- plot(m, forecast) +
+  p <- plot(m_fit, forecast) +
     labs(
       title = "Prophet Forecast",
       x = "Date",
@@ -24,7 +28,7 @@ Prophet_method <- function(){
     )
   print(p)
   
-  prophet_plot_components(m, forecast)
+  prophet_plot_components(m_fit, forecast)
   
   # Make sure all date columns are Date (not POSIXct)
   train_dates    <- as.Date(train_df$ds)
@@ -87,7 +91,8 @@ Prophet_method <- function(){
   # Residuals over time
   plot(comparison$ds, comparison$residuals, type = "l",
        col = "red", lwd = 2, ylab = "Residual", xlab = "Date",
-       main = "Prophet Residuals (Test Set)")
+       main = "Prophet Residuals (Test Set)",
+       ylim = range(c(comparison$residuals, 0)))
   abline(h = 0, col = "black", lty = 2)
   
   # Residual ACF
