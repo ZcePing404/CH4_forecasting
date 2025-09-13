@@ -1,7 +1,4 @@
-ARIMA_method <- function(ts_train, ts_test) {
-  
-  ndiffs(ts_train)
-  nsdiffs(ts_train)
+ARIMA_method <- function() {
   
   # -------------------------------
   # Manual ARIMA

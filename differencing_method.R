@@ -1,4 +1,11 @@
-differencing_method <- function(df) {
+differencing_method <- function() {
+  # Determine number of differences
+  num_seasonal_diff <- nsdiffs(ts_data_corrected)
+  num_nonseasonal_diff <- ndiffs(ts_data_corrected)
+  
+  # Print clearly
+  cat("Non-seasonal differences needed:", num_nonseasonal_diff, "\n")
+  cat("Seasonal differences needed:", num_seasonal_diff, "\n")
   
   # --------------------------------------------------------------
   # First Differencing (seasonal)
