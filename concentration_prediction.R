@@ -1,3 +1,4 @@
+install.packages("KFAS")
 library(readr)     
 library(dplyr)     
 library(lubridate) 
@@ -8,12 +9,14 @@ library(urca)
 library(zoo)
 library(prophet)
 library(Metrics)
+library(KFAS)
 source("preprocessing.R")
 source("stationary_test.R")
 source("differencing_method.R")
 source("ARIMA.R")
 source("HtWinters.R")
 source("Prophet.R")
+source("kalman_filter.R")
 
 # Read dataset
 df <- read_csv("atmospheric_methane_concentration.csv")
@@ -70,3 +73,5 @@ ARIMA_method()
 HoltWinters_method(ts_train, ts_test)
 
 Prophet_method()
+
+kalman_filter_method(ts_train, ts_test)
