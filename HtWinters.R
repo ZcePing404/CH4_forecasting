@@ -5,7 +5,7 @@ HoltWinters_method <-function(ts_train, ts_test){
   checkresiduals(es1)
   
   fc <- forecast(es1, h= length(test))
-  accuracy(fc, test)
+  forecast::accuracy(fc, test)
   
   forecast <- predict(es1, n.ahead=length(test), prediction.interval=T, level=.95)
   plot(es1,forecast,ylim =c(360, 450))
