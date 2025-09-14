@@ -1,8 +1,5 @@
 ARIMA_method <- function() {
 
-  ets(ts_train)
-  
-  
   # -------------------------------
   # ARIMA 1
   # -------------------------------
@@ -12,13 +9,9 @@ ARIMA_method <- function() {
 
   # Forecast for the manual fit arima
   fr <- forecast(fit, h = length(test))
-  layout(matrix(c(1,1)))
-  plot(fit)
-  layout(matrix(c(1,1)))
-  plot(fr)
-  lines(ts_test, col="turquoise2")
   forecast::accuracy(fr, ts_test)
   
+  layout(matrix(c(1,1)))
   plot(ts_data, 
        main = "ARIMA Model Fit and Forecast vs Actual Data",
        ylab = "Concentration (ppm)",
@@ -59,13 +52,9 @@ ARIMA_method <- function() {
   
   # Forecast for the manual fit arima
   fr <- forecast(fit2, h = length(test))
-  layout(matrix(c(1,1)))
-  plot(fit2)
-  layout(matrix(c(1,1)))
-  plot(fr)
-  lines(ts_test, col="turquoise2")
   forecast::accuracy(fr, ts_test)
   
+  layout(matrix(c(1,1)))
   plot(ts_data, 
        main = "ARIMA Model Fit and Forecast vs Actual Data",
        ylab = "Concentration (ppm)",
