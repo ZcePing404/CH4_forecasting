@@ -3,24 +3,32 @@ Prophet_method <- function(){
     ds = df_clean$date[1:length(train)],  # training dates
     y  = train                            # training values
   )
+  test_df <- data.frame(
+    ds = df_clean$date[(length(train) + 1):nrow(df_clean)],  # test dates
+    y  = test                                                # test values
+  )
   
-  
-  m <- prophet(yearly.seasonality = TRUE,   # monthly data usually has yearly cycle
+  m <- prophet(train_df,
+               yearly.seasonality = TRUE,   # monthly data usually has yearly cycle
                weekly.seasonality = FALSE,  # no need for weekly seasonality in monthly data
                daily.seasonality = FALSE,
                changepoint.range = 0.85,
                interval.width = 0.95
   )
-
-  m_fit <- fit.prophet(m, train_df)
   
-  future <- make_future_dataframe(m_fit,
+  
+  future <- make_future_dataframe(m,
                                   periods = length(test),
                                   freq = "month")
   
-  forecast <- predict(m_fit, future)
+  forecast <- predict(m, future)
+  forecast_test <- tail(forecast, nrow(test_df))
   
-  p <- plot(m_fit, forecast) +
+  residuals_test <- test_df$y - forecast_test$yhat
+  # Ljung–Box test on prediction residuals
+  Box.test(residuals_test, lag = 20, type = "Ljung-Box")
+  
+  p <- plot(m, forecast) +
     labs(
       title = "Prophet Forecast",
       x = "Date",
@@ -28,7 +36,7 @@ Prophet_method <- function(){
     )
   print(p)
   
-  prophet_plot_components(m_fit, forecast)
+  prophet_plot_components(m, forecast)
   
   # Make sure all date columns are Date (not POSIXct)
   train_dates    <- as.Date(train_df$ds)
@@ -87,13 +95,6 @@ Prophet_method <- function(){
   
   # 7. Residual analysis
   comparison$residuals <- comparison$actual - comparison$predicted
-  
-  # Residuals over time
-  plot(comparison$ds, comparison$residuals, type = "l",
-       col = "red", lwd = 2, ylab = "Residual", xlab = "Date",
-       main = "Prophet Residuals (Test Set)",
-       ylim = range(c(comparison$residuals, 0)))
-  abline(h = 0, col = "black", lty = 2)
   
   # Residual ACF
   acf(comparison$residuals, main = "ACF of Prophet Residuals")
