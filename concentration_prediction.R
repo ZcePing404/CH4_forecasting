@@ -33,7 +33,7 @@ print(df_clean)
 # Plot time series
 ggplot(df_clean, aes(x = date, y = average)) +
    geom_line(color = "steelblue") +
-   labs(title = "Monthly Avg N2O Concentration from Jan 2010 to Dec 2023",
+   labs(title = "Monthly Avg CH4 Concentration from Jan 2010 to Dec 2023",
        x = "date", y = "Avg Concentration")
 
 # ggplot(df_clean, aes(x = average)) +

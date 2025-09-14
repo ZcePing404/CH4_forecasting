@@ -14,12 +14,12 @@ stationary_test <- function() {
   cat("\n--- Original Data Analysis ---\n")
   p1 <- ggplot(df, aes(x = date, y = average)) +
     geom_line(color = "darkgreen") +
-    labs(title = "Trend in Monthly N2O Concentration", x = "Month", y = "Avg Concentration") +
+    labs(title = "Trend in Monthly CH4 Concentration", x = "Month", y = "Avg Concentration") +
     theme_minimal()
   
   # Autocorrelation Analysis
   layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
-  plot(ts_data, ylab="Avg Concentration", main="Monthly N2O concentration")
+  plot(ts_data, ylab="Avg Concentration", main="Monthly CH4 concentration")
   acf(as.numeric(ts_data), lag.max=40, main="ACF of original data")
   pacf(as.numeric(ts_data), lag.max=40, main="PACF of original data")
   

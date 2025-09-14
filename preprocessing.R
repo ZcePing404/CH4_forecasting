@@ -47,18 +47,18 @@ preprocess_data <- function() {
   # -------------------------------
   cat("\n--- STL Decomposition ---\n")
   ts_decomp <- stl(ts_data, s.window = "periodic", robust = T)
-  plot(ts_decomp, main = "Decomposition of Monthly N2O Concentration  from Jan 2010 to Dec 2023")
+  plot(ts_decomp, main = "Decomposition of Monthly CH4 Concentration  from Jan 2010 to Dec 2023")
   
   remainder_data <- ts_decomp$time.series[, "remainder"]
   plot(remainder_data,
        xlab = "Month",
        ylab = "remainder",
-       main = "Remainder of the Monthly N2O Concentration  from Jan 2010 to Dec 2023")
+       main = "Remainder of the Monthly CH4 Concentration  from Jan 2010 to Dec 2023")
   
   # Box plot
   bp <- boxplot(remainder_data,
           ylab = "Remainder",
-          main = "Boxplot of Remainder of Monthly N2O Concentration from Jan 2010 to Dec 2023")
+          main = "Boxplot of Remainder of Monthly CH4 Concentration from Jan 2010 to Dec 2023")
   outlier_idx <- which(remainder_data %in% bp$out)
   
   df_corrected <- df
