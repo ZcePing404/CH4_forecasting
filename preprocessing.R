@@ -34,7 +34,7 @@ preprocess_data <- function() {
   
   # Select the recent 14 years
   df <- df %>%
-    filter(date >= as.Date("2010-01-01") & date <= as.Date("2023-12-01"))
+    filter(date >= as.Date("2012-01-01") & date <= as.Date("2023-12-01"))
   
   min_date <- min(df$date)  
   min_year <- as.numeric(format(min_date, "%Y"))
@@ -56,22 +56,10 @@ preprocess_data <- function() {
        main = "Remainder of the Monthly N2O Concentration  from Jan 2010 to Dec 2023")
   
   # Box plot
-  boxplot(remainder_data,
+  bp <- boxplot(remainder_data,
           ylab = "Remainder",
           main = "Boxplot of Remainder of Monthly N2O Concentration from Jan 2010 to Dec 2023")
-  
-  
-  # Calculate the IQR, Q1, and Q3
-  Q1 <- quantile(remainder_data, 0.25, na.rm = TRUE)
-  Q3 <- quantile(remainder_data, 0.75, na.rm = TRUE)
-  IQR <- Q3 - Q1
-  
-  # Calculate the outlier thresholds
-  lower_bound <- Q1 - 1.5 * IQR
-  upper_bound <- Q3 + 1.5 * IQR
-  
-  outlier_idx <- which(remainder_data < (lower_bound) | 
-                         remainder_data > (upper_bound))
+  outlier_idx <- which(remainder_data %in% bp$out)
   
   df_corrected <- df
   ts_data_corrected <- ts_data

@@ -42,7 +42,7 @@ stationary_test()
 differencing_method()
 Data <- df_clean$average
 
-train_size <- floor(0.79 * length(Data))
+train_size <- 120
 train <- head(Data, train_size)
 
 min_date <- min(df_clean$date)
