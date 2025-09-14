@@ -1,22 +1,26 @@
-library(readr)     # to read csv
-library(dplyr)     # for data manipulation
-library(lubridate) # to handle dates
-library(forecast)  # ARIMA forecasting
-library(ggplot2)   # plotting
+library(readr)     
+library(dplyr)     
+library(lubridate) 
+library(forecast)  
+library(ggplot2)   
 library(tseries)
 library(urca)
 library(zoo)
+library(prophet)
+library(Metrics)
 source("preprocessing.R")
 source("stationary_test.R")
 source("differencing_method.R")
 source("ARIMA.R")
+source("HtWinters.R")
+source("Prophet.R")
 
 # Read dataset
-df <- read_csv("co2_concentration.csv")
+df <- read_csv("nitrous_oxide_concentration.csv")
 print(df)
 str(df)
 
-processed_data <- preprocess_data(df)
+processed_data <- preprocess_data()
 df_clean = processed_data$df
 ts_data = processed_data$ts_data
 
@@ -26,7 +30,7 @@ print(df_clean)
 # Plot time series
 ggplot(df_clean, aes(x = date, y = average)) +
    geom_line(color = "steelblue") +
-   labs(title = "Monthly Avg CO2 Concentration from Jan 2010 to Dec 2023",
+   labs(title = "Monthly Avg N2O Concentration from Jan 2010 to Dec 2023",
        x = "date", y = "Avg Concentration")
 
 # ggplot(df_clean, aes(x = average)) +
@@ -34,11 +38,11 @@ ggplot(df_clean, aes(x = date, y = average)) +
 #   labs(title = "Distribution of CO2 concentration",
 #        x = "Avg Concentration", y = "Count")
 
-stationary_test(df_clean)
-differencing_method(df_clean)
+stationary_test()
+differencing_method()
 Data <- df_clean$average
 
-train_size <- floor(0.80 * length(Data))
+train_size <- 120
 train <- head(Data, train_size)
 
 min_date <- min(df_clean$date)
@@ -50,6 +54,7 @@ ts_train <- ts(train,
                frequency = 12,
                start = c(min_year, min_month))
 
+
 # Get the last date of the training set
 last_train_date <- max(df_clean$date[1:length(train)])
 first_test_date <- last_train_date %m+% months(1) # Find the date of the first observation in the test set
@@ -60,4 +65,8 @@ ts_test <- ts(test,
 
 checkresiduals(ts_train)
 
-ARIMA_method(ts_train, ts_test)
+ARIMA_method()
+
+HoltWinters_method(ts_train, ts_test)
+
+Prophet_method()

@@ -1,4 +1,4 @@
-preprocess_data <- function(df) {
+preprocess_data <- function() {
   cat("\nBefore preprocessing:", nrow(df), "rows ×", ncol(df), "columns\n")
   
   # Remove missing values
@@ -10,6 +10,19 @@ preprocess_data <- function(df) {
     cat("No missing values detected in dataset\n")
   }
   
+  df <- df %>%
+    mutate(
+      date_char = as.character(date),
+      previous_date = lag(date_char),
+      month_num = ifelse(
+        grepl("\\.1$", date_char) & grepl("\\.9$", previous_date),
+        10,
+        as.numeric(sub(".*\\.", "", date_char))
+      ),
+      date = ymd(paste(floor(as.numeric(date)), month_num, "01", sep = "-"))
+    ) %>%
+    select(date,average)
+  
   # Remove duplicate rows
   dup_count <- sum(duplicated(df))
   if (dup_count > 0) {
@@ -19,16 +32,9 @@ preprocess_data <- function(df) {
     cat("No duplicate rows detected.\n")
   }
   
-  
-  # Create a date column for the monthly data
-  df$date <- as.Date(paste(df$year, df$month, "01", sep = "-"))
-  
-  df <- df %>%
-    select(date, average)
-  
   # Select the recent 14 years
   df <- df %>%
-    filter(date >= as.Date("2010-01-01"))
+    filter(date >= as.Date("2012-01-01") & date <= as.Date("2023-12-01"))
   
   min_date <- min(df$date)  
   min_year <- as.numeric(format(min_date, "%Y"))
@@ -41,32 +47,21 @@ preprocess_data <- function(df) {
   # -------------------------------
   cat("\n--- STL Decomposition ---\n")
   ts_decomp <- stl(ts_data, s.window = "periodic", robust = T)
-  plot(ts_decomp, main = "Decomposition of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
+  plot(ts_decomp, main = "Decomposition of Monthly N2O Concentration  from Jan 2010 to Dec 2023")
   
   remainder_data <- ts_decomp$time.series[, "remainder"]
   plot(remainder_data,
        xlab = "Month",
        ylab = "remainder",
-       main = "Remainder of the Monthly CO2 Concentration from Jan 2010 to Dec 2023")
+       main = "Remainder of the Monthly N2O Concentration  from Jan 2010 to Dec 2023")
   
   # Box plot
-  boxplot(remainder_data,
+  bp <- boxplot(remainder_data,
           ylab = "Remainder",
-          main = "Boxplot of Remainder of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
-
+          main = "Boxplot of Remainder of Monthly N2O Concentration from Jan 2010 to Dec 2023")
+  outlier_idx <- which(remainder_data %in% bp$out)
   
-  # Calculate the IQR, Q1, and Q3
-  Q1 <- quantile(remainder_data, 0.25, na.rm = TRUE)
-  Q3 <- quantile(remainder_data, 0.75, na.rm = TRUE)
-  IQR <- Q3 - Q1
-  
-  # Calculate the outlier thresholds
-  lower_bound <- Q1 - 1.5 * IQR
-  upper_bound <- Q3 + 1.5 * IQR
-  
-  outlier_idx <- which(remainder_data < (lower_bound) | 
-                         remainder_data > (upper_bound))
-  
+  df_corrected <- df
   ts_data_corrected <- ts_data
   
   if (length(outlier_idx) > 0) {
@@ -76,33 +71,13 @@ preprocess_data <- function(df) {
     for (i in outlier_idx) {
       ts_data_corrected[i] <- ts_ideal_data[i]
     }
+    # --- Convert the corrected ts object back to a data frame ---
+    average <- as.numeric(ts_data_corrected)
+    df_corrected <- as.data.frame(average)
+    df_corrected$date <- as.Date(as.yearmon(time(ts_data_corrected)))
   } else {
     cat("No outliers detected in dataset\n")
   }
-  
-  plot(ts_data, 
-       xlab = "Month",
-       ylab = "Avg Concentration",
-       main = "Original Data with Corrected Outliers")
-  lines(ts_data_corrected, col = "red")
-  # Add a legend to the plot
-  legend("topleft", 
-         legend = c("Original Data", "Corrected Data"), 
-         col = c("black", "red"), 
-         lty = 1,
-         bty = "n")
-  
-  cat("\nAfter preprocessing:", nrow(df), "rows ×", ncol(df), "columns\n")
-  
-  ts_decomp <- stl(ts_data_corrected, s.window = "periodic")
-  plot(ts_decomp, main = "Decomposition of Monthly CO2 Concentration from Jan 2010 to Dec 2023")
-  
-  # --- Convert the corrected ts object back to a data frame ---
-  df_corrected <- as.data.frame(ts_data_corrected)
-  df_corrected$average <- df_corrected$x
-  df_corrected$date <- as.Date(as.yearmon(time(ts_data_corrected)))
-  df_corrected <- df_corrected %>%
-    select(date, average)
   
   return(list(df=df_corrected, ts_data=ts_data_corrected))
 }

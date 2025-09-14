@@ -1,4 +1,9 @@
-differencing_method <- function(df) {
+differencing_method <- function() {
+  # Determine number of differences
+  num_seasonal_diff <- nsdiffs(ts_data)
+  num_nonseasonal_diff <- ndiffs(ts_data)
+  cat("Non-seasonal differences needed:", num_nonseasonal_diff, "\n")
+  cat("Seasonal differences needed:", num_seasonal_diff, "\n")
   
   # --------------------------------------------------------------
   # First Differencing (seasonal)
@@ -10,8 +15,8 @@ differencing_method <- function(df) {
                                   ylab="Avg Concentration", lty=1))
   
   # Autocorrelation Analysis
-  acf(diff_ts_data, main="ACF of first differencing", lag.max=25)
-  pacf(diff_ts_data, main="PACF of first differencing", lag.max=25)
+  acf(diff_ts_data, main="ACF of first differencing", lag.max=40)
+  pacf(diff_ts_data, main="PACF of first differencing", lag.max=40)
   
   # ADF Test
   adf <- adf.test(diff_ts_data)
@@ -31,8 +36,8 @@ differencing_method <- function(df) {
                                   ylab="Avg Concentration", lty=1))
   
   # Autocorrelation Analysis
-  acf(diff_ts_data2, main="ACF of Second differencing", lag.max=25)
-  pacf(diff_ts_data2, main="PACF of Second differencing", lag.max=25)
+  acf(diff_ts_data2, main="ACF of Second differencing", lag.max=40)
+  pacf(diff_ts_data2, main="PACF of Second differencing", lag.max=40)
 
   
   # ADF Test

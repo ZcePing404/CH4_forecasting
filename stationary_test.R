@@ -1,4 +1,4 @@
-stationary_test <- function(df) {
+stationary_test <- function() {
   
   # -------------------------------
   # Seasonality
@@ -14,14 +14,14 @@ stationary_test <- function(df) {
   cat("\n--- Original Data Analysis ---\n")
   p1 <- ggplot(df, aes(x = date, y = average)) +
     geom_line(color = "darkgreen") +
-    labs(title = "Trend in Monthly CO2 Concentration", x = "Month", y = "Avg Concentration") +
+    labs(title = "Trend in Monthly N2O Concentration", x = "Month", y = "Avg Concentration") +
     theme_minimal()
   
   # Autocorrelation Analysis
   layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
-  plot(ts_data, ylab="Avg Concentration", main="Monthly CO2 concentration")
-  acf(ts_data, main="ACF of original data")
-  pacf(ts_data, main="PACF of original data")
+  plot(ts_data, ylab="Avg Concentration", main="Monthly N2O concentration")
+  acf(as.numeric(ts_data), lag.max=40, main="ACF of original data")
+  pacf(as.numeric(ts_data), lag.max=40, main="PACF of original data")
   
   cat("\n--- Stationarity Tests ---\n")
   
