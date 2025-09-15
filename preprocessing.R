@@ -79,5 +79,17 @@ preprocess_data <- function() {
     cat("No outliers detected in dataset\n")
   }
   
+  plot(ts_data, 
+       xlab = "Month",
+       ylab = "Avg Concentration",
+       main = "Original Data with Corrected Outliers")
+  lines(ts_data_corrected, col = "red")
+  # Add a legend to the plot
+  legend("topleft", 
+         legend = c("Original Data", "Corrected Data"), 
+         col = c("black", "red"), 
+         lty = 1,
+         bty = "n")
+  
   return(list(df=df_corrected, ts_data=ts_data_corrected))
 }

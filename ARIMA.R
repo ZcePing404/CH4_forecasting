@@ -3,7 +3,7 @@ ARIMA_method <- function() {
   # -------------------------------
   # ARIMA 1
   # -------------------------------
-  fit <- arima(ts_train, order=c(1,1,0), seasonal=list(order =c(1,1,1), period=12))
+  fit <- arima(ts_train, order=c(0,1,0), seasonal=list(order =c(2,1,1), period=12))
   checkresiduals(fit)
   summary(fit)
 
