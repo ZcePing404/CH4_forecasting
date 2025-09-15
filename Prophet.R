@@ -108,13 +108,6 @@ Prophet_method <- function(){
   train_resid <- train_actual - train_pred  
   # ACF + Ljung-Box test
   checkresiduals(train_resid) 
-  
-  # -------------------
-  # Test Residual Check
-  # -------------------
-  test_resid <- test_actual - test_pred
-  # ACF + Ljung-Box test
-  checkresiduals(test_resid) 
 
   # Show results
   cat("\nTrain Accuracy:\n")
