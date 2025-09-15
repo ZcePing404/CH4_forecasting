@@ -1,14 +1,14 @@
 HoltWinters_method <-function(){
 
   es1 <- HoltWinters(ts_train,alpha = 0.9, beta = 0.02, gamma = 1)
+  # es1 <- HoltWinters(ts_train)
   es1
   
   checkresiduals(es1)
   
-  fc <- forecast(es1, h=length(test))
+  fc <- forecast(es1, h=length(ts_test))
   forecast::accuracy(fc, ts_test)
-  
-  forecast <- predict(es1, n.ahead=length(test), prediction.interval=T, level=.95)
+
   
   layout(matrix(c(1,1)))
   plot(ts_data, 
@@ -31,30 +31,18 @@ HoltWinters_method <-function(){
          cex = 0.8)
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   # Set the range of alpha values to test
   scales_to_test <- seq(from = 0.1, to = 1, by = 0.05)
   
-  # Store results
-  results <- data.frame(
+  # Store resultsAlpha
+  resultsAlpha <- data.frame(
+    alpha = numeric(),
+    train_rmse = numeric(),
+    test_rmse = numeric()
+  )
+  
+  #Store resultsBeta
+  resultsBeta <- data.frame(
     alpha = numeric(),
     train_rmse = numeric(),
     test_rmse = numeric()
@@ -67,28 +55,69 @@ HoltWinters_method <-function(){
     train_rmse <- sqrt(mean((ts_train - m$fitted[, "xhat"])^2, na.rm = TRUE))
     fr <- forecast(m, h = length(ts_test))
     test_rmse <- sqrt(mean((ts_test - fr$mean)^2, na.rm = TRUE))
-    results <- rbind(results, data.frame(
+    resultsAlpha <- rbind(resultsAlpha, data.frame(
       alpha = s,
       train_rmse = train_rmse,
       test_rmse = test_rmse
     ))
   }
   
-  plot(results$alpha, results$test_rmse,
+  plot(resultsAlpha$alpha, resultsAlpha$test_rmse,
        type = "b",
        xlab = "Alpha (Smoothing Parameter)",
        ylab = "RMSE",
        main = "Holt-Winters Model Validation Curve",
-       ylim = range(c(results$train_rmse, results$test_rmse)),
+       ylim = range(c(resultsAlpha$train_rmse, resultsAlpha$test_rmse)),
        col = "red",
        pch = 16,
        cex = 1.5,
        lwd = 2)
   
   # Add the training set RMSE to the plot
-  lines(results$alpha, results$train_rmse,
+  lines(resultsAlpha$alpha, resultsAlpha$train_rmse,
         type = "b",
-        col = "blue",
+        # col = "blue",
+        pch = 16,
+        cex = 1.5,
+        lwd = 2)
+  
+  # Add a legend
+  legend("topright",
+         legend = c("Test RMSE", "Training RMSE"),
+         col = c("red", "blue"),
+         pch = 16,
+         lwd = 2,
+         cex = 0.8)
+  
+  
+  #Beta validation curve
+  for (s in scales_to_test) {
+    m <- HoltWinters(ts_train, alpha = 0.02, beta = s, gamma = 1)
+    
+    train_rmse <- sqrt(mean((ts_train - m$fitted[, "xhat"])^2, na.rm = TRUE))
+    fr <- forecast(m, h = length(ts_test))
+    test_rmse <- sqrt(mean((ts_test - fr$mean)^2, na.rm = TRUE))
+    resultsBeta <- rbind(resultsBeta, data.frame(
+      beta = s,
+      train_rmse = train_rmse,
+      test_rmse = test_rmse
+    ))
+  }
+  
+  plot(resultsBeta$beta, resultsBeta$test_rmse,
+       type = "b",
+       xlab = "Beta (Trend Smoothing Parameter)",
+       ylab = "RMSE",
+       main = "Holt-Winters Model Validation Curve",
+       ylim = range(c(resultsBeta$train_rmse, resultsBeta$test_rmse)),
+       col = "red",
+       pch = 16,
+       cex = 1.5,
+       lwd = 2)
+  
+  # Add the training set RMSE to the plot
+  lines(resultsBeta$beta, resultsBeta$train_rmse,
+        type = "b",
         pch = 16,
         cex = 1.5,
         lwd = 2)
