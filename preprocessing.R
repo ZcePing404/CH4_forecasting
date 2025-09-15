@@ -1,5 +1,4 @@
 preprocess_data <- function() {
-  cat("\nBefore preprocessing:", nrow(df), "rows ×", ncol(df), "columns\n")
   
   # Remove missing values
   missing_count <- sum(is.na(df$average))
@@ -8,6 +7,15 @@ preprocess_data <- function() {
     df <- df %>% filter(!is.na(average))
   } else {
     cat("No missing values detected in dataset\n")
+  }
+  
+  # Remove duplicate rows
+  dup_count <- sum(duplicated(df))
+  if (dup_count > 0) {
+    cat("Duplicate rows detected:", dup_count, "→ removing duplicates.\n")
+    df <- df[!duplicated(df), ]
+  } else {
+    cat("No duplicate rows detected.\n")
   }
   
   df <- df %>%
@@ -22,15 +30,6 @@ preprocess_data <- function() {
       date = ymd(paste(floor(as.numeric(date)), month_num, "01", sep = "-"))
     ) %>%
     select(date,average)
-  
-  # Remove duplicate rows
-  dup_count <- sum(duplicated(df))
-  if (dup_count > 0) {
-    cat("Duplicate rows detected:", dup_count, "→ removing duplicates.\n")
-    df <- df[!duplicated(df), ]
-  } else {
-    cat("No duplicate rows detected.\n")
-  }
   
   # Select the recent 14 years
   df <- df %>%
@@ -51,7 +50,7 @@ preprocess_data <- function() {
   
   remainder_data <- ts_decomp$time.series[, "remainder"]
   plot(remainder_data,
-       xlab = "Month",
+       xlab = "Year",
        ylab = "remainder",
        main = "Remainder of the Monthly CH4 Concentration  from Jan 2010 to Dec 2023")
   
@@ -80,7 +79,7 @@ preprocess_data <- function() {
   }
   
   plot(ts_data, 
-       xlab = "Month",
+       xlab = "Year",
        ylab = "Avg Concentration",
        main = "Original Data with Corrected Outliers")
   lines(ts_data_corrected, col = "red")

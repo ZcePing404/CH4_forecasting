@@ -11,9 +11,19 @@ ARIMA_method <- function() {
   fr <- forecast(fit, h = length(test))
   forecast::accuracy(fr, ts_test)
   
+  # Extract model parameters from the 'fit' object
+  p <- fit$arma[1]
+  d <- fit$arma[6]
+  q <- fit$arma[2]
+  P <- fit$arma[3]
+  D <- fit$arma[7]
+  Q <- fit$arma[4]
+  S <- fit$arma[5]
+  plot_title <- paste0("ARIMA(", p, ",", d, ",", q, ")(", P, ",", D, ",", Q, ")[", S, "] Fit and Forecast vs Actual Data")
+  
   layout(matrix(c(1,1)))
   plot(ts_data, 
-       main = "ARIMA Model Fit and Forecast vs Actual Data",
+       main = plot_title,
        ylab = "Concentration (ppm)",
        xlab = "Year",
        col = "black")
@@ -54,13 +64,23 @@ ARIMA_method <- function() {
   fr <- forecast(fit2, h = length(test))
   forecast::accuracy(fr, ts_test)
   
+  # Extract model parameters from the 'fit' object
+  p <- fit2$arma[1]
+  d <- fit2$arma[6]
+  q <- fit2$arma[2]
+  P <- fit2$arma[3]
+  D <- fit2$arma[7]
+  Q <- fit2$arma[4]
+  S <- fit2$arma[5]
+  plot_title2 <- paste0("ARIMA(", p, ",", d, ",", q, ")(", P, ",", D, ",", Q, ")[", S, "] Fit and Forecast vs Actual Data")
+  
   layout(matrix(c(1,1)))
   plot(ts_data, 
-       main = "ARIMA Model Fit and Forecast vs Actual Data",
+       main = plot_title2,
        ylab = "Concentration (ppm)",
        xlab = "Year",
        col = "black")
-  lines(fitted(fit), col = "red")
+  lines(fitted(fit2), col = "red")
   lines(fr$mean, col = "blue")
   polygon(c(time(fr$mean), rev(time(fr$mean))),
           c(fr$lower[,2], rev(fr$upper[,2])),   # 95% CI (2nd column)
