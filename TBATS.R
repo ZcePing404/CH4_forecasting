@@ -2,8 +2,7 @@ tbats_method <- function(ts_train, ts_test) {
   TBATSfit <- tbats(ts_train)
   forecast_results <- forecast(TBATSfit, h = length(ts_test), biasadj = TRUE)
   fitted_values <- fitted(TBATSfit)
-  summary(TBATSfit)
-  forecast::accuracy(TBATSfit)
+  print(summary(TBATSfit))
   forecast::accuracy(forecast_results, ts_test)
   checkresiduals(TBATSfit)
   
