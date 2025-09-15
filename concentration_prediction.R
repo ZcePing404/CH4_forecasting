@@ -36,11 +36,6 @@ ggplot(df_clean, aes(x = date, y = average)) +
    labs(title = "Monthly Avg CH4 Concentration from Jan 2010 to Dec 2023",
        x = "date", y = "Avg Concentration")
 
-# ggplot(df_clean, aes(x = average)) +
-#   geom_histogram(fill = "skyblue", bins = 30, color = "black") +
-#   labs(title = "Distribution of CO2 concentration",
-#        x = "Avg Concentration", y = "Count")
-
 stationary_test()
 differencing_method()
 Data <- df_clean$average
